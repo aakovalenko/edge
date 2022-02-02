@@ -1,13 +1,11 @@
 package main
 
 import (
-	"log"
-	"net/http"
+    "log"
+    "net/http"
 )
 
-type server struct{}
-
-func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func home(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
     switch r.Method {
     case "GET":
@@ -28,8 +26,14 @@ func (s *server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+func statistic(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+    w.Write([]byte(`{"message": "200"}`))
+}
+
 func main() {
-    s := &server{}
-    http.Handle("/", s)
+    http.HandleFunc("/", home)
+	http.HandleFunc("/statistics", statistic)
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
