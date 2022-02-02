@@ -1,2 +1,2 @@
 # edge
-rest api golang create girilla mux
+rest api golang create gorilla mux
