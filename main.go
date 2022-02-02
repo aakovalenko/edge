@@ -7,36 +7,23 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func home(w http.ResponseWriter, r *http.Request) {
+func get(w http.ResponseWriter, r *http.Request) {
     w.Header().Set("Content-Type", "application/json")
-    switch r.Method {
-    case "GET":
-        w.WriteHeader(http.StatusOK)
-        w.Write([]byte(`{"message": "get called"}`))
-    case "POST":
-        w.WriteHeader(http.StatusCreated)
-        w.Write([]byte(`{"message": "post called"}`))
-    case "PUT":
-        w.WriteHeader(http.StatusAccepted)
-        w.Write([]byte(`{"message": "put called"}`))
-    case "DELETE":
-        w.WriteHeader(http.StatusOK)
-        w.Write([]byte(`{"message": "delete called"}`))
-    default:
-        w.WriteHeader(http.StatusNotFound)
-        w.Write([]byte(`{"message": "not found"}`))
-    }
-}
-
-func statistic(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+    w.WriteHeader(http.StatusOK)
     w.Write([]byte(`{"message": "200"}`))
 }
 
+func post(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
+    w.Write([]byte(`{"message": "post called"}`))
+}
+
+
 func main() {
-	r := mux.NewRouter()
-    r.HandleFunc("/", home)
-	r.HandleFunc("/statistics", statistic)
+    r := mux.NewRouter()
+    r.HandleFunc("/statistics", get).Methods(http.MethodGet)
+	r.HandleFunc("/", post).Methods(http.MethodGet)
+
     log.Fatal(http.ListenAndServe(":8080", r))
 }
