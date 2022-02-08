@@ -6,10 +6,20 @@ import (
     "log"
     "net/http"
 )
+/*
+{
+    "date_from": "dd-mm-yyyy",
+    "date_to": "dd-mm-yyyy",
+    "credit_limits": [
+        {"mm": 1000},
+        {"mm": 1000}
+    ]
+}
+*/
 type Credits struct {
     DateFrom string `json:date_from`
     DateTo string `json:date_to`
-    CreditLimits CreditLimits `json:credit_limits`
+    CreditLimits map[uint]CreditLimits `json:credit_limits`
 }
 
 type CreditLimits struct {
@@ -19,7 +29,10 @@ type CreditLimits struct {
 
 
 func postCredits(w http.ResponseWriter, r *http.Request) {
+
+
     var credits Credits
+    
 
     err := json.NewDecoder(r.Body).Decode(&credits)
     if err != nil {
