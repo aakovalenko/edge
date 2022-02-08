@@ -1,29 +1,40 @@
 package main
 
 import (
+    "encoding/json"
+    "fmt"
     "log"
     "net/http"
-
-	"github.com/gorilla/mux"
 )
-
-func get(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusOK)
-    w.Write([]byte(`{"message": "200"}`))
+type Credits struct {
+    DateFrom string `json:date_from`
+    DateTo string `json:date_to`
+    CreditLimits CreditLimits `json:credit_limits`
 }
 
-func post(w http.ResponseWriter, r *http.Request) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(http.StatusCreated)
-    w.Write([]byte(`{"message": "post called"}`))
+type CreditLimits struct {
+    M1 uint `json:"mm"`
+    M2 uint `json:"mm"`
 }
 
+
+func postCredits(w http.ResponseWriter, r *http.Request) {
+    var credits Credits
+
+    err := json.NewDecoder(r.Body).Decode(&credits)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+        return
+    }
+
+    // Do something with the Person struct...
+    fmt.Fprintf(w, "Credits: %+v", credits)
+}
 
 func main() {
-    r := mux.NewRouter()
-    r.HandleFunc("/statistics", get).Methods(http.MethodGet)
-	r.HandleFunc("/", post).Methods(http.MethodGet)
+    mux := http.NewServeMux()
+    mux.HandleFunc("/statistics", postCredits)
 
-    log.Fatal(http.ListenAndServe(":8080", r))
+    err := http.ListenAndServe(":4000", mux)
+    log.Fatal(err)
 }
