@@ -1,11 +1,12 @@
 package main
 
 import (
-    "encoding/json"
-    "fmt"
-    "log"
-    "net/http"
+	"encoding/json"
+	"fmt"
+	"log"
+	"net/http"
 )
+
 /*
 {
     "date_from": "dd-mm-yyyy",
@@ -17,37 +18,34 @@ import (
 }
 */
 type Credits struct {
-    DateFrom string `json:date_from`
-    DateTo string `json:date_to`
-    CreditLimits map[uint]CreditLimits `json:credit_limits`
+	DateFrom     string         `json:"date_from"`
+	DateTo       string         `json:"date_to"`
+	CreditLimits []CreditLimits `json:"credit_limits"`
 }
 
 type CreditLimits struct {
-    M1 uint `json:"mm"`
-    M2 uint `json:"mm"`
+	M1 uint `json:"m1"`
+	M2 uint `json:"m2"`
 }
-
 
 func postCredits(w http.ResponseWriter, r *http.Request) {
 
+	var credits Credits
 
-    var credits Credits
-    
+	err := json.NewDecoder(r.Body).Decode(&credits)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-    err := json.NewDecoder(r.Body).Decode(&credits)
-    if err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
-        return
-    }
-
-    // Do something with the Person struct...
-    fmt.Fprintf(w, "Credits: %+v", credits)
+	// Do something with the Person struct...
+	fmt.Fprintf(w, "Credits: %+v", credits)
 }
 
 func main() {
-    mux := http.NewServeMux()
-    mux.HandleFunc("/statistics", postCredits)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/statistics", postCredits)
 
-    err := http.ListenAndServe(":4000", mux)
-    log.Fatal(err)
+	err := http.ListenAndServe(":4000", mux)
+	log.Fatal(err)
 }
